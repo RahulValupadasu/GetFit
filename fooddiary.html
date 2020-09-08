@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+      <title>Food Diary</title>
+      <!-- <link rel="stylesheet" href="./css/food_log.css"> -->
+      <link href = "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+         rel = "stylesheet">
+      <script src = "https://code.jquery.com/jquery-1.10.2.js"></script>
+      <script src = "https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+      <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script> -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+      <link rel="stylesheet" href="./css/style.css">
+      <script>
+         $(document).ready( function() {
+         //        date picker jquery code
+         $( "#datepicker" ).datepicker({
+           showOn: "button",
+           buttonImage:'images/32x32.png',
+           buttonImageOnly: true,
+           buttonText: "Select date",
+           dateFormat: 'MM dd, yy',
+           onSelect:function(dateText,inst){
+               $("#date_label").text($("#datepicker").val())     
+           }
+         });
+         //     code to show todays date in date_lable
+         $("#date_label").text($.datepicker.formatDate('MM dd, yy', new Date()));
+         //pre-btn click function trigger, changes date to 1 day back from current date
+         $("#pre-btn").click(function(){
+             var date_in_date_label =  $("#datepicker").datepicker('getDate');
+             console.log("the below one is date_in");
+             console.log(date_in_date_label);
+             date_in_date_label.setDate(date_in_date_label.getDate()-1);
+             $("#datepicker").datepicker('setDate',date_in_date_label);
+             $("#date_label").text($("#datepicker").val());
+         });
+         //pre-btn click function trigger, changes date to 1 day back from current date
+         $("#next-btn").click(function(){
+             var date_in_date_label =  $("#datepicker").datepicker('getDate');
+             console.log("the below one is date_in");
+             console.log(date_in_date_label);
+             date_in_date_label.setDate(date_in_date_label.getDate()+1);
+             $("#datepicker").datepicker('setDate',date_in_date_label);
+             $("#date_label").text($("#datepicker").val());
+         });
+          //jquery click function to hide and show content when clicked on complete the entry
+         $("#cte01").click(function(){
+             $("#hide01").hide();
+             $(".hidden01").show();
+             $("#mae01").show();
+             $("#cte01").hide();
+         });
+          //jquery click function to hide and show content when clicked on make additional entries
+         $("#mae01").click(function(){
+             $("#hide01").show();
+             $("#cte01").show();
+             $(".hidden01").hide();
+             $("#mae01").hide();
+         });
+            //Double click trigger to edit water input
+         $("#water_display").dblclick(function(){
+             $("#water_display").hide();
+             $("#hidden_water_input_btn").show();
+         });
+             //click trigger when clicked on save button
+         $("#hidden_water_btn").click(function(){
+             $("#water_display").show();
+             $("#hidden_water_input_btn").hide();
+             $("#water_value").text(parseInt($("#hidden_water_input").val())+parseInt($("#water_value").text()));
+             water_animation();
+             });
+         
+                
+         //        $(".add01").click(function(){
+         //            var name = $("#name").val();
+         //            var email = $("#email").val();
+         //            var markup = "<tr><td><input type='checkbox' name='record'></td><td>" + name + "</td><td>" + email + "</td></tr>";
+         //            $("table tbody").append(markup);
+         //        });
+             
+             //            Login form validations
+                 $("#loginUserValidation").click(function(){
+                 var uemail = $("#uemail").val();
+                 var psw = $("#psw").val();
+                 var isValid = true;
+                 if (uemail == "") {
+                     $("#uemail_error").text("Email is required");
+                     isValid = false;
+                 } else {
+                     if (validateEmail(uemail)) {
+                         $("#uemail_error").text("");
+                     } else {
+                         $("#uemail_error").text("Email is invalid");
+                         isValid = false;
+                     }
+                 }
+         
+                 if (psw == "") {
+                     $("#psw_error").text("Password is required");
+                     isValid = false;
+                 } else {
+                     if (checkPasswordLength(psw)) {
+                         $("#psw_error").text("");
+                     } else {
+                         $("#psw_error").text("Password should be minimum six characters");
+                         isValid = false;
+                     }
+                 }
+                 if (isValid) {
+                     //		$("loginInSuccess").innerHTML = "Login successful";
+                     loginUser();
+                 } else {
+                     //        $("loginInSuccess").innerHTML = "";
+                 }
+             });
+         //            sign up form validations
+              $("#signUpUserValidation").click(function(){
+                  var fullName = $("#fullName").val();
+                 var email = $("#email").val();
+                 var datepicker = $("#datepicker").val();
+                 var signUpPsw = $("#signUpPsw").val();
+                 var signUpPswConfirm = $("#signUpPswConfirm").val();
+                 var validationFlag = true;                 
+                      if(fullName == ""){
+                          $("#fullName_error").text("You need to enter name"); 
+                          validationFlag = false;
+                      }else{
+                          $("#fullName_error").text(""); 
+                      } 
+                      if(email == ""){
+                          $("#email_error").text("You need to enter email"); 
+                          validationFlag = false;
+                       }else{
+                          if (validateEmail(email)) {
+                                 $("#email_error").text("");
+                             } else {
+                                 $("#email_error").text("Email is invalid");
+                                 validationFlag = false;
+                             }
+                       }
+                      if(signUpPsw == ""){
+                          $("#signUpPsw_error").text("You need to enter password"); 
+                          validationFlag = false;
+                      }else{
+                          $("#signUpPsw_error").text(""); 
+                      } 
+                      if(signUpPswConfirm == ""){
+                          $("#signUpPswConfirm_error").text("You need to enter confirm password"); 
+                          validationFlag = false;
+                      }else{
+                          $("#signUpPswConfirm_error").text(""); 
+                      } 
+                  
+                  if (signUpPsw == "") {
+                     $("#signUpPsw_error").text("Password is required");
+                     isValid = false;
+                 } else {
+                     $("#signUpPsw_error").text(""); 
+                 }
+         
+         //             password validation checking
+                  if (signUpPswConfirm == "") {
+                         $("#signUpPswConfirm_error").text("Confirm password is required");
+                         isValid = false;
+                     } else if (signUpPswConfirm !== signUpPsw) {
+                         $("#signUpPswConfirm_error").text("Password and confirm password should be same");
+                         isValid = false;
+                     } else {
+                         if (checkPasswordLength(signUpPsw)) {
+                             $("#signUpPswConfirm_error").text(""); 
+                         } else {
+                             $("#signUpPswConfirm_error").text("Password should be minimum six characters"); 
+                             isValid = false;
+                         }
+                     }
+                  
+                      if (signUpPsw != "" && signUpPswConfirm != "" && signUpPsw != signUpPswConfirm){
+                          $("#signUpPswConfirm_error").text("Password mismatch"); 
+                          validationFlag = false;
+                      }
+                      if(validationFlag){
+         //                     $("#signUpSuccess").text("valid data"); 
+                          signUpUser(fullName, email, datepicker, signUpPsw);
+                      }else{
+                          $("#signUpSuccess").text("");
+                      }
+                  });  
+         
+         
+         
+         //            regular expression validation for email
+                 var validateEmail = function (email) {
+                     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                     return re.test(email);
+                 }
+                 // password validation
+                 var checkPasswordLength = function (password) {
+                     if (password.length > 5) {
+                         return true;
+                     } else {
+                         return false;
+                     }
+                 }
+                 
+         //            login user based on local storage
+                 var loginUser=function() {
+                     if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                         var flag = true;
+                         var temp = JSON.parse(localStorage.getItem("userData"));
+                         for (var i = 0; i < temp.length; i++) {
+                             if (temp[i].email == $("#uemail").val()) {
+                                 if (temp[i].psw == $("#psw").val()) {
+                                     flag = false;
+                                     $.modal.close();
+                                     $("#u_name").text(temp[i].fullName);
+                                     localStorage.setItem("logInUser", JSON.stringify(temp[i]));
+                                     changeButtonsAccLogStat();
+                                 } else {
+                                     flag = false;
+                                     $("#psw_error").text("Password is incorrect");
+                                 }
+                             }
+                         }
+                         if (flag) {
+                             $("#psw_error").text("Please signup, email does not exist");
+                         }
+                     }
+                 }
+                 
+         //            checking login status
+                 var checkLoginStatus = function() {
+                     if (JSON.parse(localStorage.getItem("logInUser"))) {
+                         return true;
+                     }
+                     return false;
+                 }
+                  
+         //            logout functionality
+                 $("#logout").click(function (){
+                     localStorage.removeItem("logInUser");
+                     changeButtonsAccLogStat();
+                 });
+         //            display welcome message and logout based on login status
+                 var changeButtonsAccLogStat = function() {
+                     var flag = checkLoginStatus();
+                     if (flag) {
+                         var temp = JSON.parse(localStorage.getItem("logInUser"));
+                         $("#u_name").text("Hola!!, welcome " + temp.fullName);
+                         $("#logout").css({"display": "block"});
+                         $("#login").css({"display": "none"});
+                         $("#signup").css({"display": "none"});
+                     } else {
+                         $("#u_name").text("");
+                         $("#logout").css({"display": "none"});
+                         $("#login").css({"display": "block"});
+                         $("#signup").css({"display": "block"});
+                     }
+                 }
+         //            signup user and store data in local storage
+                 var signUpUser=function(fullName, email, datepicker, signUpPsw) {
+                     if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                         var flag = true;
+                         var temp = JSON.parse(localStorage.getItem("userData"));
+                         for (var i = 0; i < temp.length; i++) {
+                             if (temp[i].email == document.getElementById("email").value) {
+                                 flag = false;
+                                 $("#signUpSuccess").text("");
+                                 $("#signUpPswConfirm_error").text("Email already exists");
+                             }
+                         }
+         
+                         if (flag) {
+                             if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                 temp.push({
+                                     fullName: fullName,
+                                     email: email,
+                                     dob: datepicker,
+                                     psw: signUpPsw
+                                 });
+                                 localStorage.setItem("userData", JSON.stringify(temp))
+                                 $("#signUpSuccess").text("Sign up successful");
+                             } else {
+                 //				alert("Repeat password does not match");
+                             }
+                         }
+                     } else {
+                         if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                             localStorage.setItem("userData", JSON.stringify([]))
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             temp.push({
+                                 fullName: fullName,
+                                 email: email,
+                                 dob: datepicker,
+                                 psw: signUpPsw
+                             });
+                             localStorage.setItem("userData", JSON.stringify(temp))
+                             $("#signUpSuccess").text("Sign up successful");
+                             changeButtonsAccLogStat();
+                         } else {
+                 //			alert("Repeat password does not match");
+                         }
+                     }
+                 }
+                 changeButtonsAccLogStat();
+              });
+                var emptyloginForm = function(){
+                    $("#uemail").val("");
+                     $("#psw").val("");
+                }
+                var emptySignUpForm = function(){
+                    $("#fullName").val("");
+                 $("#email").val("");
+                 $("#datepicker").val("");
+                 $("#signUpPsw").val("");
+                 $("#signUpPswConfirm").val("");
+                }
+         
+          //function which performs add water functionality
+          var initial_water=0;
+         function add_water(water_value){
+             if(water_value==100){
+                 initial_water=initial_water+100;
+             $("#water_value").text(initial_water);
+             water_animation()
+             }
+             else if(water_value==250){
+                 initial_water=initial_water+250;
+                 $("#water_value").text(initial_water);
+                 water_animation()
+             }
+             else if(water_value==500){
+                 initial_water=initial_water+500;
+                 $("#water_value").text(initial_water);
+                 water_animation()
+         
+             }
+             else{
+                 var value_water = $("#water-input").val();
+                 initial_water=initial_water+parseInt(value_water);
+                 $("#water_value").text(initial_water);
+                 water_animation();
+             }
+         };
+          
+         //function used to animate water filling based on the water input value
+         function water_animation(){
+             if(parseInt($("#water_value").text())>=100 && parseInt($("#water_value").text())<200){
+                 $(function(){
+                    $('.water').animate({
+                      height: '20%'
+                     }, 1000)
+                     });
+             }else if(parseInt($("#water_value").text())>=200 && parseInt($("#water_value").text())<400){
+                 $(function(){
+                    $('.water').animate({
+                      height: '40%'
+                     }, 1000)
+                     });
+             }else if(parseInt($("#water_value").text())>=400 && parseInt($("#water_value").text())<600){
+                 $(function(){
+                    $('.water').animate({
+                      height: '60%'
+                     }, 1000)
+                     });
+             }else if(parseInt($("#water_value").text())>=600 && parseInt($("#water_value").text())<800){
+                 $(function(){
+                    $('.water').animate({
+                      height: '80%'
+                     }, 1000)
+                     });
+             }else if(parseInt($("#water_value").text())>=800 && parseInt($("#water_value").text())<1000){
+                 $(function(){
+                    $('.water').animate({
+                      height: '100%'
+                     }, 1000)
+                     });
+             }
+         
+         }
+         
+      </script>
+   </head>
+   <body>
+      <header class="hd01">
+         <div>
+            <div>
+               <h2 class="logo"><a href="index.html">Getfit</a></h2>
+            </div>
+            <div>
+               <div><a class = "login_signup" href="#id01" rel="modal:open" id="login" onclick="emptyloginForm()">Login/</a></div>
+               <div>
+                  <a class = "login_signup" href="#id02" rel="modal:open" id="signup" onclick="emptySignUpForm()">Sign Up</a>                        
+               </div>
+               <div><span class="common-color login-signup" id="u_name">,</span>&nbsp;&nbsp;
+                  <a class="common-color login-signup"  href="#" id="logout" style="width:auto;">(Logout)</a>
+               </div>
+            </div>
+         </div>
+         <div>
+            <a href="fooddiary.html">Food Log</a>
+            <a href="Consultation.html">Consultation</a>
+            <a href="Contact_us.html">Contact Us</a>
+            <a href="Services.html">Services</a>
+            <a href="testimonials.html">Testimonals</a>
+            <a href="TrainingList.html">Traning Exercises</a>
+            <a href="equipments.html">Equipments</a>
+         </div>
+      </header>
+      <main id="fm01">
+         <h1 class="foodlabel">Your Food Log For:<span style="font-size:0em;"><button id="pre-btn">&lt;</button>
+            </span><span id="date_label"></span><span><button id="next-btn">&gt;</button></span>
+            <input type="hidden" id= "datepicker"></input>
+         </h1>
+         <!--//table to add food-->
+         <table class="log_table">
+            <tbody>
+               <tr class="breakfast_row">
+                  <td>Breakfast</td>
+                  <td>Calories(kCal)</td>
+                  <td>Carbs(g)</td>
+                  <td>Fats(g)</td>
+                  <td>Protiens(g)</td>
+               </tr>
+               <tr>
+                  <td><a href="#id0food" rel="modal:open" class="add_food">Add food</a></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td>Lunch</td>
+               </tr>
+               <tr>
+                  <td><a href="#id0food" rel="modal:open" class="add_food">Add food</a></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td>Dinner</td>
+               </tr>
+               <tr>
+                  <td><a href="#id0food" rel="modal:open"class="add_food">Add food</a></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr>
+                  <td>snacks</td>
+               </tr>
+               <tr>
+                  <td><a href="#id0food" rel="modal:open"class="add_food">Add food</a></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+               </tr>
+               <tr class="calculations_section" >
+                  <td>Total</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+               </tr>
+               <tr class="calculations_section" >
+                  <td>Your Daily Goal</td>
+                  <td>2,380</td>
+                  <td>298</td>
+                  <td>79</td>
+                  <td>79</td>
+               </tr>
+               <tr class="calculations_section" >
+                  <td>Remaining</td>
+                  <td>2,380</td>
+                  <td>298</td>
+                  <td>79</td>
+                  <td>79</td>
+               </tr>
+            </tbody>
+         </table>
+         <!--Once entry is done complete section-->
+         <div class="complete_entry">
+            <p id="hide01">When you complete all the entries, click here: </p>
+            <div class="hidden01">
+               <p>Based on your total calories consumed for today, you are likely not eating enough.</p>
+               <p>For safe weight loss, the National Institutes of Health recommends no less than 1000-1200 calories for women and 1200-1500 calories for men.</p>
+            </div>
+            <button  id="cte01">Complete the entry</button>
+            <button id="mae01">Make addional entries</button>
+         </div>
+         <!--//water input section-->
+         <div class="water-intake">
+            <div class="water-consumption-block">
+               <h3>Water Intake</h3>
+               <h4>Todays Water Total</h4>
+               <p>Aim to drink at least 1920 milliliters of water today. You can quick add common sizes or enter a custom amount</p>
+               <h4>Quick Add</h4>
+               <ul class="quick-add-options">
+                  <li onclick="add_water(100)">+100 ml</li>
+                  <li onclick="add_water(250)"id="250_ml">+250 ml</li>
+                  <li onclick="add_water(500)"id="500_ml">+500 ml</li>
+               </ul>
+               <h4 style="clear: both;">Add Custom</h4>
+               <p class="custom-add-water">
+                  <input id="water-input" type="text"><span> ml</span>
+                  <input class="add_water" type="button" value="Add" onclick="add_water(10)">
+               </p>
+            </div>
+            <div class="water-glass">
+               <div>
+                  <p id="water_display">
+                     <span id="water_value" style="font-style: oblique;font-size: x-large;">0</span>
+                     <span style="font-style: oblique;font-size: x-large;">ml</span>
+                  </p>
+                  <div id="hidden_water_input_btn" display="hidden">
+                     <input type="text" id="hidden_water_input">
+                     <input type="button" value="Save" id="hidden_water_btn" >
+                  </div>
+               </div>
+               <div class="glass">
+                  <div class="water"></div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <!--modal popup code to add food-->
+      <div class="mod01">
+         <div class="modal " id="id0food">
+            <p>Search for food in our database:</p>
+            <div class="ia01">
+               <input type="text" placeholder="Search">
+               <a href="#"  rel="modal:close" class="add01">Add</a>
+            </div>
+         </div>
+      </div>
+      <div id="id01" class="modal">
+         <span class="modal-header">Login to proceed further</span>
+         <hr>
+         <label for="uemail"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="uemail">
+         <span class="validation-style" id="uemail_error"></span><br>
+         <label for="psw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="psw">  
+         <span class="validation-style" id="psw_error"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button class="cancelbtn">Cancel</button>  -->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="loginUserValidation">Login</button>    
+         </div>
+      </div>
+      <!--Signup form-->
+      <div id="id02" class="modal">
+         <span  class="modal-header">Sign up to create an account</span>
+         <hr>
+         <label for="fullName"><b>Name</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Name" id="fullName">
+         <span class="validation-style" id="fullName_error"></span><br>
+         <label for="email"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="email">
+         <span class="validation-style" id="email_error"></span><br>
+         <label for="datepicker"><b>Date Of Birth</b></label>
+         <input type="text" id="datepicker" placeholder="Enter Date Of Birth">
+         <label for="signUpPsw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="signUpPsw">
+         <span class="validation-style" id="signUpPsw_error"></span><br>
+         <label for="signUpPswConfirm"><b>Confirm Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Confirm Password" id="signUpPswConfirm">
+         <span class="validation-style" id="signUpPswConfirm_error"></span><br>     
+         <span class="validation-success-style" id="signUpSuccess"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button type="button" class="cancelbtn">Cancel</button>-->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="signUpUserValidation">Sign up</button>
+         </div>
+      </div>
+   </body>
+</html>

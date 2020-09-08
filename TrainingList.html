@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="author" content="Ankita Bhatia">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Training List</title>
+      <link rel="stylesheet" href="css/style.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+      <!-- <link rel="stylesheet" href="TrainingList.css"> -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+      <script>
+         $(document).ready(function(){
+         //            Login form validations
+                     $("#loginUserValidation").click(function(){
+                     var uemail = $("#uemail").val();
+                     var psw = $("#psw").val();
+                     var isValid = true;
+                     if (uemail == "") {
+                         $("#uemail_error").text("Email is required");
+                         isValid = false;
+                     } else {
+                         if (validateEmail(uemail)) {
+                             $("#uemail_error").text("");
+                         } else {
+                             $("#uemail_error").text("Email is invalid");
+                             isValid = false;
+                         }
+                     }
+         
+                     if (psw == "") {
+                         $("#psw_error").text("Password is required");
+                         isValid = false;
+                     } else {
+                         if (checkPasswordLength(psw)) {
+                             $("#psw_error").text("");
+                         } else {
+                             $("#psw_error").text("Password should be minimum six characters");
+                             isValid = false;
+                         }
+                     }
+                     if (isValid) {
+                         //		$("loginInSuccess").innerHTML = "Login successful";
+                         loginUser();
+                     } else {
+                         //        $("loginInSuccess").innerHTML = "";
+                     }
+                 });
+         //            sign up form validations
+                  $("#signUpUserValidation").click(function(){
+                      var fullName = $("#fullName").val();
+                     var email = $("#email").val();
+                     var datepicker = $("#datepicker").val();
+                     var signUpPsw = $("#signUpPsw").val();
+                     var signUpPswConfirm = $("#signUpPswConfirm").val();
+                     var validationFlag = true;                 
+                          if(fullName == ""){
+                              $("#fullName_error").text("You need to enter name"); 
+                              validationFlag = false;
+                          }else{
+                              $("#fullName_error").text(""); 
+                          } 
+                          if(email == ""){
+                              $("#email_error").text("You need to enter email"); 
+                              validationFlag = false;
+                           }else{
+                              if (validateEmail(email)) {
+                                     $("#email_error").text("");
+                                 } else {
+                                     $("#email_error").text("Email is invalid");
+                                     validationFlag = false;
+                                 }
+                           }
+                          if(signUpPsw == ""){
+                              $("#signUpPsw_error").text("You need to enter password"); 
+                              validationFlag = false;
+                          }else{
+                              $("#signUpPsw_error").text(""); 
+                          } 
+                          if(signUpPswConfirm == ""){
+                              $("#signUpPswConfirm_error").text("You need to enter confirm password"); 
+                              validationFlag = false;
+                          }else{
+                              $("#signUpPswConfirm_error").text(""); 
+                          } 
+                      
+                      if (signUpPsw == "") {
+                         $("#signUpPsw_error").text("Password is required");
+                         isValid = false;
+                     } else {
+                         $("#signUpPsw_error").text(""); 
+                     }
+         
+         //             password validation checking
+                      if (signUpPswConfirm == "") {
+                             $("#signUpPswConfirm_error").text("Confirm password is required");
+                             isValid = false;
+                         } else if (signUpPswConfirm !== signUpPsw) {
+                             $("#signUpPswConfirm_error").text("Password and confirm password should be same");
+                             isValid = false;
+                         } else {
+                             if (checkPasswordLength(signUpPsw)) {
+                                 $("#signUpPswConfirm_error").text(""); 
+                             } else {
+                                 $("#signUpPswConfirm_error").text("Password should be minimum six characters"); 
+                                 isValid = false;
+                             }
+                         }
+                      
+                          if (signUpPsw != "" && signUpPswConfirm != "" && signUpPsw != signUpPswConfirm){
+                              $("#signUpPswConfirm_error").text("Password mismatch"); 
+                              validationFlag = false;
+                          }
+                          if(validationFlag){
+         //                     $("#signUpSuccess").text("valid data"); 
+                              signUpUser(fullName, email, datepicker, signUpPsw);
+                          }else{
+                              $("#signUpSuccess").text("");
+                          }
+                      });  
+         
+         
+           
+         //            regular expression validation for email
+                     var validateEmail = function (email) {
+                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                         return re.test(email);
+                     }
+                     // password validation
+                     var checkPasswordLength = function (password) {
+                         if (password.length > 5) {
+                             return true;
+                         } else {
+                             return false;
+                         }
+                     }
+                     
+         //            login user based on local storage
+                     var loginUser=function() {
+                         if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                             var flag = true;
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             for (var i = 0; i < temp.length; i++) {
+                                 if (temp[i].email == $("#uemail").val()) {
+                                     if (temp[i].psw == $("#psw").val()) {
+                                         flag = false;
+                                         $.modal.close();
+                                         $("#u_name").text(temp[i].fullName);
+                                         localStorage.setItem("logInUser", JSON.stringify(temp[i]));
+                                         changeButtonsAccLogStat();
+                                     } else {
+                                         flag = false;
+                                         $("#psw_error").text("Password is incorrect");
+                                     }
+                                 }
+                             }
+                             if (flag) {
+                                 $("#psw_error").text("Please signup, email does not exist");
+                             }
+                         }
+                     }
+                     
+         //            checking login status
+                     var checkLoginStatus = function() {
+                         if (JSON.parse(localStorage.getItem("logInUser"))) {
+                             return true;
+                         }
+                         return false;
+                     }
+                      
+         //            logout functionality
+                     $("#logout").click(function (){
+                         localStorage.removeItem("logInUser");
+                         changeButtonsAccLogStat();
+                     });
+         //            display welcome message and logout based on login status
+                     var changeButtonsAccLogStat = function() {
+                         var flag = checkLoginStatus();
+                         if (flag) {
+                             var temp = JSON.parse(localStorage.getItem("logInUser"));
+                             $("#u_name").text("Hola!!, welcome " + temp.fullName);
+                             $("#logout").css({"display": "block"});
+                             $("#login").css({"display": "none"});
+                             $("#signup").css({"display": "none"});
+                         } else {
+                             $("#u_name").text("");
+                             $("#logout").css({"display": "none"});
+                             $("#login").css({"display": "block"});
+                             $("#signup").css({"display": "block"});
+                         }
+                     }
+         //            signup user and store data in local storage
+                     var signUpUser=function(fullName, email, datepicker, signUpPsw) {
+                         if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                             var flag = true;
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             for (var i = 0; i < temp.length; i++) {
+                                 if (temp[i].email == document.getElementById("email").value) {
+                                     flag = false;
+                                     $("#signUpSuccess").text("");
+                                     $("#signUpPswConfirm_error").text("Email already exists");
+                                 }
+                             }
+         
+                             if (flag) {
+                                 if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                     temp.push({
+                                         fullName: fullName,
+                                         email: email,
+                                         dob: datepicker,
+                                         psw: signUpPsw
+                                     });
+                                     localStorage.setItem("userData", JSON.stringify(temp))
+                                     $("#signUpSuccess").text("Sign up successful");
+                                 } else {
+                     //				alert("Repeat password does not match");
+                                 }
+                             }
+                         } else {
+                             if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                 localStorage.setItem("userData", JSON.stringify([]))
+                                 var temp = JSON.parse(localStorage.getItem("userData"));
+                                 temp.push({
+                                     fullName: fullName,
+                                     email: email,
+                                     dob: datepicker,
+                                     psw: signUpPsw
+                                 });
+                                 localStorage.setItem("userData", JSON.stringify(temp))
+                                 $("#signUpSuccess").text("Sign up successful");
+                                 changeButtonsAccLogStat();
+                             } else {
+                     //			alert("Repeat password does not match");
+                             }
+                         }
+                     }
+                     changeButtonsAccLogStat();
+                  });
+                    var emptyloginForm = function(){
+                        $("#uemail").val("");
+                         $("#psw").val("");
+                    }
+                    var emptySignUpForm = function(){
+                        $("#fullName").val("");
+                     $("#email").val("");
+                     $("#datepicker").val("");
+                     $("#signUpPsw").val("");
+                     $("#signUpPswConfirm").val("");
+                    }
+         		   
+         		   
+      </script>
+   </head>
+   <body>
+      <header class="hd01">
+         <div>
+            <div>
+               <h2 class="logo"><a href="index.html">Getfit</a></h2>
+            </div>
+            <div>
+               <div><a class = "login_signup" href="#id01" rel="modal:open" id="login" onclick="emptyloginForm()">Login/</a></div>
+               <div>
+                  <a class = "login_signup" href="#id02" rel="modal:open" id="signup" onclick="emptySignUpForm()">Sign Up</a>                        
+               </div>
+               <div><span class="common-color login-signup" id="u_name">,</span>&nbsp;&nbsp;
+                  <a class="common-color login-signup"  href="#" id="logout" style="width:auto;">(Logout)</a>
+               </div>
+            </div>
+         </div>
+         <div>
+            <a href="fooddiary.html">Food Log</a>
+            <a href="Consultation.html">Consultation</a>
+            <a href="Contact_us.html">Contact Us</a>
+            <a href="Services.html">Services</a>
+            <a href="testimonials.html">Testimonals</a>
+            <a href="TrainingList.html">Traning Exercises</a>
+            <a href="equipments.html">Equipments</a>
+         </div>
+      </header>
+      <!----Main section starts--->
+      <main>
+      <main>
+         <div class="Training_list px-5 py-5">
+            <div class="page_title Training_list Program_title ">
+               <div class="text-center common_title_page">
+                  <h1>Boot Camp</h1>
+               </div>
+            </div>
+            <div class="Training_list Program_sec">
+               <div class="container">
+                  <div class="row flex-nowrap d-flex align-items-center">
+                     <div class="Bootcampimg">
+                        <img src="Images/bootcamp.jpg" alt="bootcamp" class="img-responsive rounded h-100 w-100 img_in_abt">
+                     </div>
+                     <!-- boot camp workout  -->
+                     <div class="aboutcontain">
+                        <p class="mb-0 f-16">Our boot camp workouts are unique; they’re designed to be an intense hour of total body training.
+                           This helps develop your body in a way that will allow for a higher degree of ease when performing daily activities 
+                           such as climbing stairs and lifting groceries!All types of people are welcome, whether you consider yourself to be 
+                           strong or weak, fit or not so fit, your mind and body will benefit from our class.At Quick Fitness,
+                           our Boot camp classes are designed to build strength, stamina and endurance through a vast variety of exercises
+                           that of which includes explosive routines, lifting weights, plyometrics and cardiovascular regimes. 
+                           This class will also provide social support to those taking part, which promotes a dynamic workout environment for both men and women of all age groups.
+                           The objective is that each individual works at their own pace within small teams towards a common goal.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="Training_List_sec pt-5">
+               <div class="page_title Training__list title">
+                  <div class="text-center common_title_page">
+                     <h1>Boxercise</h1>
+                  </div>
+               </div>
+               <div class="Training_List_sec">
+                  <div class="container">
+                     <div class="row flex-nowrap d-flex align-items-center">
+                        <!-- Boxiercise content -->
+                        <div class="aboutcontain">
+                           <p class="mb-0 f-16">Our trained boxing instructors are here to coach you to perfect form, empower you to move faster and motivate you to do your absolute best.
+                              The Boxercise class is constructed for beginners, and there is no experience necessary whatsoever!
+                              Accept the challenge and we ensure that you will get a workout that kicks your butt and also helps you kick some butt!
+                           </p>
+                        </div>
+                        <div class="Bootcampimg">
+                           <img src="Images/boxercise.jpg" alt="boxercise" class="img-responsive h-100 w-100 rounded img_in_abt">
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="Training_list pt-5">
+               <div class="page_title Training_List_title">
+                  <div class="text-center common_title_page">
+                     <h1>Body Sculpting</h1>
+                  </div>
+               </div>
+            </div>
+            <div class="Training_List_sec">
+               <div class="container">
+                  <div class="row flex-nowrap d-flex align-items-center">
+                     <div class="Bootcampimg">
+                        <img src="Images/bodysculpting.png" alt="bodysculpting" class="img-responsive rounded w-100 h-100 img_in_abt">
+                     </div>
+                     <!-- body sculpting -->
+                     <div class="aboutcontain">
+                        <p class="f-16">Our Body Sculpt class is designed to help you sculpt your physique into the body you imagined for yourself. 
+                           This class will help you get in shape, help tone your body and will also allow you to reduce overall body fat.
+                           Our qualified and enthusiastic personal trainers will guide you through a series of energetic and specifically crafted exercises
+                           that will not only improve your overall build but that will also motivate you to continue to better yourself outside the classroom.
+                        </p>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </main>
+      <!---main section ends----->
+      <div id="id01" class="modal">
+         <span class="modal-header">Login to proceed further</span>
+         <hr>
+         <label for="uemail"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="uemail">
+         <span class="validation-style" id="uemail_error"></span><br>
+         <label for="psw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="psw">  
+         <span class="validation-style" id="psw_error"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button class="cancelbtn">Cancel</button>  -->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="loginUserValidation">Login</button>    
+         </div>
+      </div>
+      <!--Signup form-->
+      <div id="id02" class="modal">
+         <span  class="modal-header">Sign up to create an account</span>
+         <hr>
+         <label for="fullName"><b>Name</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Name" id="fullName">
+         <span class="validation-style" id="fullName_error"></span><br>
+         <label for="email"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="email">
+         <span class="validation-style" id="email_error"></span><br>
+         <label for="datepicker"><b>Date Of Birth</b></label>
+         <input type="text" id="datepicker" placeholder="Enter Date Of Birth">
+         <label for="signUpPsw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="signUpPsw">
+         <span class="validation-style" id="signUpPsw_error"></span><br>
+         <label for="signUpPswConfirm"><b>Confirm Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Confirm Password" id="signUpPswConfirm">
+         <span class="validation-style" id="signUpPswConfirm_error"></span><br>     
+         <span class="validation-success-style" id="signUpSuccess"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button type="button" class="cancelbtn">Cancel</button>-->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="signUpUserValidation">Sign up</button>
+         </div>
+      </div>
+   </body>
+</html>

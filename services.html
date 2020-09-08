@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <link rel="stylesheet" href="./css/style.css" type="text/css">
+      <script src="functions.js" async></script>
+      <meta charset="utf-8">
+      <link rel="prefetch" href="./images/logo.png">
+      <link rel="prefetch" href="./images/logo2.png">
+      <link rel="prefetch" href="./images/services/cardio.jpg">
+      <link rel="prefetch" href="./images/services/core.jpg">
+      <link rel="prefetch" href="./images/services/muscle.jpg">
+      <link rel="prefetch" href="./images/services/posture.jpg">
+      <link rel="prefetch" href="./images/services/trx.jpg">
+      <link rel="prefetch" href="./images/services/weight.jpg">
+      <title id="title">Services</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+      <script>
+         $(document).ready(function(){
+         //            Login form validations
+                     $("#loginUserValidation").click(function(){
+                     var uemail = $("#uemail").val();
+                     var psw = $("#psw").val();
+                     var isValid = true;
+                     if (uemail == "") {
+                         $("#uemail_error").text("Email is required");
+                         isValid = false;
+                     } else {
+                         if (validateEmail(uemail)) {
+                             $("#uemail_error").text("");
+                         } else {
+                             $("#uemail_error").text("Email is invalid");
+                             isValid = false;
+                         }
+                     }
+         
+                     if (psw == "") {
+                         $("#psw_error").text("Password is required");
+                         isValid = false;
+                     } else {
+                         if (checkPasswordLength(psw)) {
+                             $("#psw_error").text("");
+                         } else {
+                             $("#psw_error").text("Password should be minimum six characters");
+                             isValid = false;
+                         }
+                     }
+                     if (isValid) {
+                         //		$("loginInSuccess").innerHTML = "Login successful";
+                         loginUser();
+                     } else {
+                         //        $("loginInSuccess").innerHTML = "";
+                     }
+                 });
+         //            sign up form validations
+                  $("#signUpUserValidation").click(function(){
+                      var fullName = $("#fullName").val();
+                     var email = $("#email").val();
+                     var datepicker = $("#datepicker").val();
+                     var signUpPsw = $("#signUpPsw").val();
+                     var signUpPswConfirm = $("#signUpPswConfirm").val();
+                     var validationFlag = true;                 
+                          if(fullName == ""){
+                              $("#fullName_error").text("You need to enter name"); 
+                              validationFlag = false;
+                          }else{
+                              $("#fullName_error").text(""); 
+                          } 
+                          if(email == ""){
+                              $("#email_error").text("You need to enter email"); 
+                              validationFlag = false;
+                           }else{
+                              if (validateEmail(email)) {
+                                     $("#email_error").text("");
+                                 } else {
+                                     $("#email_error").text("Email is invalid");
+                                     validationFlag = false;
+                                 }
+                           }
+                          if(signUpPsw == ""){
+                              $("#signUpPsw_error").text("You need to enter password"); 
+                              validationFlag = false;
+                          }else{
+                              $("#signUpPsw_error").text(""); 
+                          } 
+                          if(signUpPswConfirm == ""){
+                              $("#signUpPswConfirm_error").text("You need to enter confirm password"); 
+                              validationFlag = false;
+                          }else{
+                              $("#signUpPswConfirm_error").text(""); 
+                          } 
+                      
+                      if (signUpPsw == "") {
+                         $("#signUpPsw_error").text("Password is required");
+                         isValid = false;
+                     } else {
+                         $("#signUpPsw_error").text(""); 
+                     }
+         
+         //             password validation checking
+                      if (signUpPswConfirm == "") {
+                             $("#signUpPswConfirm_error").text("Confirm password is required");
+                             isValid = false;
+                         } else if (signUpPswConfirm !== signUpPsw) {
+                             $("#signUpPswConfirm_error").text("Password and confirm password should be same");
+                             isValid = false;
+                         } else {
+                             if (checkPasswordLength(signUpPsw)) {
+                                 $("#signUpPswConfirm_error").text(""); 
+                             } else {
+                                 $("#signUpPswConfirm_error").text("Password should be minimum six characters"); 
+                                 isValid = false;
+                             }
+                         }
+                      
+                          if (signUpPsw != "" && signUpPswConfirm != "" && signUpPsw != signUpPswConfirm){
+                              $("#signUpPswConfirm_error").text("Password mismatch"); 
+                              validationFlag = false;
+                          }
+                          if(validationFlag){
+         //                     $("#signUpSuccess").text("valid data"); 
+                              signUpUser(fullName, email, datepicker, signUpPsw);
+                          }else{
+                              $("#signUpSuccess").text("");
+                          }
+                      });  
+         
+         
+           
+         //            regular expression validation for email
+                     var validateEmail = function (email) {
+                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                         return re.test(email);
+                     }
+                     // password validation
+                     var checkPasswordLength = function (password) {
+                         if (password.length > 5) {
+                             return true;
+                         } else {
+                             return false;
+                         }
+                     }
+                     
+         //            login user based on local storage
+                     var loginUser=function() {
+                         if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                             var flag = true;
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             for (var i = 0; i < temp.length; i++) {
+                                 if (temp[i].email == $("#uemail").val()) {
+                                     if (temp[i].psw == $("#psw").val()) {
+                                         flag = false;
+                                         $.modal.close();
+                                         $("#u_name").text(temp[i].fullName);
+                                         localStorage.setItem("logInUser", JSON.stringify(temp[i]));
+                                         changeButtonsAccLogStat();
+                                     } else {
+                                         flag = false;
+                                         $("#psw_error").text("Password is incorrect");
+                                     }
+                                 }
+                             }
+                             if (flag) {
+                                 $("#psw_error").text("Please signup, email does not exist");
+                             }
+                         }
+                     }
+                     
+         //            checking login status
+                     var checkLoginStatus = function() {
+                         if (JSON.parse(localStorage.getItem("logInUser"))) {
+                             return true;
+                         }
+                         return false;
+                     }
+                      
+         //            logout functionality
+                     $("#logout").click(function (){
+                         localStorage.removeItem("logInUser");
+                         changeButtonsAccLogStat();
+                     });
+         //            display welcome message and logout based on login status
+                     var changeButtonsAccLogStat = function() {
+                         var flag = checkLoginStatus();
+                         if (flag) {
+                             var temp = JSON.parse(localStorage.getItem("logInUser"));
+                             $("#u_name").text("Hola!!, welcome " + temp.fullName);
+                             $("#logout").css({"display": "block"});
+                             $("#login").css({"display": "none"});
+                             $("#signup").css({"display": "none"});
+                         } else {
+                             $("#u_name").text("");
+                             $("#logout").css({"display": "none"});
+                             $("#login").css({"display": "block"});
+                             $("#signup").css({"display": "block"});
+                         }
+                     }
+         //            signup user and store data in local storage
+                     var signUpUser=function(fullName, email, datepicker, signUpPsw) {
+                         if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                             var flag = true;
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             for (var i = 0; i < temp.length; i++) {
+                                 if (temp[i].email == document.getElementById("email").value) {
+                                     flag = false;
+                                     $("#signUpSuccess").text("");
+                                     $("#signUpPswConfirm_error").text("Email already exists");
+                                 }
+                             }
+         
+                             if (flag) {
+                                 if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                     temp.push({
+                                         fullName: fullName,
+                                         email: email,
+                                         dob: datepicker,
+                                         psw: signUpPsw
+                                     });
+                                     localStorage.setItem("userData", JSON.stringify(temp))
+                                     $("#signUpSuccess").text("Sign up successful");
+                                 } else {
+                     //				alert("Repeat password does not match");
+                                 }
+                             }
+                         } else {
+                             if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                 localStorage.setItem("userData", JSON.stringify([]))
+                                 var temp = JSON.parse(localStorage.getItem("userData"));
+                                 temp.push({
+                                     fullName: fullName,
+                                     email: email,
+                                     dob: datepicker,
+                                     psw: signUpPsw
+                                 });
+                                 localStorage.setItem("userData", JSON.stringify(temp))
+                                 $("#signUpSuccess").text("Sign up successful");
+                                 changeButtonsAccLogStat();
+                             } else {
+                     //			alert("Repeat password does not match");
+                             }
+                         }
+                     }
+                     changeButtonsAccLogStat();
+                  });
+                    var emptyloginForm = function(){
+                        $("#uemail").val("");
+                         $("#psw").val("");
+                    }
+                    var emptySignUpForm = function(){
+                        $("#fullName").val("");
+                     $("#email").val("");
+                     $("#datepicker").val("");
+                     $("#signUpPsw").val("");
+                     $("#signUpPswConfirm").val("");
+                    }
+         		   
+         		   
+      </script>
+   </head>
+   <body>
+      <header class="hd01">
+         <div>
+            <div>
+               <h2 class="logo"><a href="index.html">Getfit</a></h2>
+            </div>
+            <div>
+               <div><a class = "login_signup" href="#id01" rel="modal:open" id="login" onclick="emptyloginForm()">Login/</a></div>
+               <div>
+                  <a class = "login_signup" href="#id02" rel="modal:open" id="signup" onclick="emptySignUpForm()">Sign Up</a>                        
+               </div>
+               <div><span class="common-color login-signup" id="u_name">,</span>&nbsp;&nbsp;
+                  <a class="common-color login-signup"  href="#" id="logout" style="width:auto;">(Logout)</a>
+               </div>
+            </div>
+         </div>
+         <div> 
+            <a href="fooddiary.html">Food Log</a>
+            <a href="Consultation.html">Consultation</a>
+            <a href="Contact_us.html">Contact Us</a>
+            <a href="Services.html">Services</a>
+            <a href="testimonials.html">Testimonals</a>
+            <a href="TrainingList.html">Traning Exercises</a>
+            <a href="equipments.html">Equipments</a>
+         </div>
+      </header>
+      <!--        services content-->
+      <section class="container-info-services">
+         <div class="info-services">
+            <h1 style="font-size: 35px">SERVICES</h1>
+            <p>We offer plenty of options, both <strong>individual</strong> and <strong>group</strong> workouts.<br> You can train with a group in one of our scheduled classes or do an individual more intensive workout with one of our <a href="instructors.html">instructors</a>. <br>We offer 6 different types of workouts in both categories (individual and group):</p>
+         </div>
+      </section>
+      <!--        Slide Show Container-->
+      <div class="slideshow-container">
+         <div class="mySlides fade">
+            <div class="numbertext">1 / 6</div>
+            <img src="./images/services/cardio.jpg" style="width:100%" alt="Cardio-Fitness">
+            <div class="text">CARDIO FITNESS</div>
+         </div>
+         <div class="mySlides fade">
+            <div class="numbertext">2 / 6</div>
+            <img src="./images/services/core.jpg" style="width:100%" alt="Core-Strength">
+            <div class="text">CORE STRENGTH</div>
+         </div>
+         <div class="mySlides fade">
+            <div class="numbertext">3 / 6</div>
+            <img src="./images/services/muscle.jpg"   style="width:100%" alt="Muscle-Toning">
+            <div class="text">MUSCLE TONING</div>
+         </div>
+         <div class="mySlides fade">
+            <div class="numbertext">4 / 6</div>
+            <img src="./images/services/posture.jpg"   style="width:100%" alt="Posture-Correction">
+            <div class="text">POSTURE CORRECTION</div>
+         </div>
+         <div class="mySlides fade">
+            <div class="numbertext">5 / 6</div>
+            <img src="./images/services/trx.jpg"   style="width:100%" alt="TRX-Workout">
+            <div class="text">TRX WORKOUT</div>
+         </div>
+         <div class="mySlides fade">
+            <div class="numbertext">6 / 6</div>
+            <img src="./images/services/weight.jpg"   style="width:100%" alt="Weight-Loss">
+            <div class="text">WEIGHT-LOSS</div>
+         </div>
+         <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+         <a class="next" onclick="plusSlides(1)">&#10095;</a>
+      </div>
+      <br>
+      <div style="text-align:center">
+         <!--            to navigate from one slide to another-->
+         <span class="dot" onclick="currentSlide(1)"></span> 
+         <span class="dot" onclick="currentSlide(2)"></span> 
+         <span class="dot" onclick="currentSlide(3)"></span>
+         <span class="dot" onclick="currentSlide(4)"></span> 
+         <span class="dot" onclick="currentSlide(5)"></span> 
+         <span class="dot" onclick="currentSlide(6)"></span> 
+      </div>
+      <script>    
+         var slideIndex = 1;
+         showSlides(slideIndex);
+         //function to navigate to another slide
+         function plusSlides(n) {
+             showSlides(slideIndex += n);
+         }
+         //function to show current slide
+         function currentSlide(n) {
+             showSlides(slideIndex = n);
+         }
+          //function to show slides
+         function showSlides(n) {
+             var i;
+             var slides = document.getElementsByClassName("mySlides");
+             var dots = document.getElementsByClassName("dot");
+             if (n > slides.length) {slideIndex = 1}    
+             if (n < 1) {slideIndex = slides.length}
+             for (i = 0; i < slides.length; i++) {
+             slides[i].style.display = "none";  
+             }
+             for (i = 0; i < dots.length; i++) {
+                 dots[i].className = dots[i].className.replace(" active-services", "");
+             }
+             slides[slideIndex-1].style.display = "block";  
+             dots[slideIndex-1].className += " active-services";
+         }
+      </script>
+      <div id="id01" class="modal">
+         <span class="modal-header">Login to proceed further</span>
+         <hr>
+         <label for="uemail"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="uemail">
+         <span class="validation-style" id="uemail_error"></span><br>
+         <label for="psw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="psw">  
+         <span class="validation-style" id="psw_error"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button class="cancelbtn">Cancel</button>  -->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="loginUserValidation">Login</button>    
+         </div>
+      </div>
+      <!--Signup form-->
+      <div id="id02" class="modal">
+         <span  class="modal-header">Sign up to create an account</span>
+         <hr>
+         <label for="fullName"><b>Name</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Name" id="fullName">
+         <span class="validation-style" id="fullName_error"></span><br>
+         <label for="email"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="email">
+         <span class="validation-style" id="email_error"></span><br>
+         <label for="datepicker"><b>Date Of Birth</b></label>
+         <input type="text" id="datepicker" placeholder="Enter Date Of Birth">
+         <label for="signUpPsw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="signUpPsw">
+         <span class="validation-style" id="signUpPsw_error"></span><br>
+         <label for="signUpPswConfirm"><b>Confirm Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Confirm Password" id="signUpPswConfirm">
+         <span class="validation-style" id="signUpPswConfirm_error"></span><br>     
+         <span class="validation-success-style" id="signUpSuccess"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button type="button" class="cancelbtn">Cancel</button>-->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="signUpUserValidation">Sign up</button>
+         </div>
+      </div>
+   </body>
+</html>

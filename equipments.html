@@ -1,0 +1,490 @@
+<!DOCTYPE html >
+<html lang="en">
+   <head>
+      <title>Equipments</title>
+      <meta name="description" content="GetFit is a gym website which takes care of mental
+         and physical well being.">
+      <meta name="keywords" content="GetFit, IFC, Fitness Club, Gym Website">
+      <meta name="author" content="Radhika Arora">
+      <meta charset="utf-8">
+      <meta content="width=device-width, initial-scale=1" name="viewport" />
+      <link rel="stylesheet" type="text/css" href="./css/style.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+      <script>
+         $(document).ready(function(){
+         //            Login form validations
+                     $("#loginUserValidation").click(function(){
+                     var uemail = $("#uemail").val();
+                     var psw = $("#psw").val();
+                     var isValid = true;
+                     if (uemail == "") {
+                         $("#uemail_error").text("Email is required");
+                         isValid = false;
+                     } else {
+                         if (validateEmail(uemail)) {
+                             $("#uemail_error").text("");
+                         } else {
+                             $("#uemail_error").text("Email is invalid");
+                             isValid = false;
+                         }
+                     }
+         
+                     if (psw == "") {
+                         $("#psw_error").text("Password is required");
+                         isValid = false;
+                     } else {
+                         if (checkPasswordLength(psw)) {
+                             $("#psw_error").text("");
+                         } else {
+                             $("#psw_error").text("Password should be minimum six characters");
+                             isValid = false;
+                         }
+                     }
+                     if (isValid) {
+                         //		$("loginInSuccess").innerHTML = "Login successful";
+                         loginUser();
+                     } else {
+                         //        $("loginInSuccess").innerHTML = "";
+                     }
+                 });
+         //            sign up form validations
+                  $("#signUpUserValidation").click(function(){
+                      var fullName = $("#fullName").val();
+                     var email = $("#email").val();
+                     var datepicker = $("#datepicker").val();
+                     var signUpPsw = $("#signUpPsw").val();
+                     var signUpPswConfirm = $("#signUpPswConfirm").val();
+                     var validationFlag = true;                 
+                          if(fullName == ""){
+                              $("#fullName_error").text("You need to enter name"); 
+                              validationFlag = false;
+                          }else{
+                              $("#fullName_error").text(""); 
+                          } 
+                          if(email == ""){
+                              $("#email_error").text("You need to enter email"); 
+                              validationFlag = false;
+                           }else{
+                              if (validateEmail(email)) {
+                                     $("#email_error").text("");
+                                 } else {
+                                     $("#email_error").text("Email is invalid");
+                                     validationFlag = false;
+                                 }
+                           }
+                          if(signUpPsw == ""){
+                              $("#signUpPsw_error").text("You need to enter password"); 
+                              validationFlag = false;
+                          }else{
+                              $("#signUpPsw_error").text(""); 
+                          } 
+                          if(signUpPswConfirm == ""){
+                              $("#signUpPswConfirm_error").text("You need to enter confirm password"); 
+                              validationFlag = false;
+                          }else{
+                              $("#signUpPswConfirm_error").text(""); 
+                          } 
+                      
+                      if (signUpPsw == "") {
+                         $("#signUpPsw_error").text("Password is required");
+                         isValid = false;
+                     } else {
+                         $("#signUpPsw_error").text(""); 
+                     }
+         
+         //             password validation checking
+                      if (signUpPswConfirm == "") {
+                             $("#signUpPswConfirm_error").text("Confirm password is required");
+                             isValid = false;
+                         } else if (signUpPswConfirm !== signUpPsw) {
+                             $("#signUpPswConfirm_error").text("Password and confirm password should be same");
+                             isValid = false;
+                         } else {
+                             if (checkPasswordLength(signUpPsw)) {
+                                 $("#signUpPswConfirm_error").text(""); 
+                             } else {
+                                 $("#signUpPswConfirm_error").text("Password should be minimum six characters"); 
+                                 isValid = false;
+                             }
+                         }
+                      
+                          if (signUpPsw != "" && signUpPswConfirm != "" && signUpPsw != signUpPswConfirm){
+                              $("#signUpPswConfirm_error").text("Password mismatch"); 
+                              validationFlag = false;
+                          }
+                          if(validationFlag){
+         //                     $("#signUpSuccess").text("valid data"); 
+                              signUpUser(fullName, email, datepicker, signUpPsw);
+                          }else{
+                              $("#signUpSuccess").text("");
+                          }
+                      });  
+         
+         
+           
+         //            regular expression validation for email
+                     var validateEmail = function (email) {
+                         var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                         return re.test(email);
+                     }
+                     // password validation
+                     var checkPasswordLength = function (password) {
+                         if (password.length > 5) {
+                             return true;
+                         } else {
+                             return false;
+                         }
+                     }
+                     
+         //            login user based on local storage
+                     var loginUser=function() {
+                         if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                             var flag = true;
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             for (var i = 0; i < temp.length; i++) {
+                                 if (temp[i].email == $("#uemail").val()) {
+                                     if (temp[i].psw == $("#psw").val()) {
+                                         flag = false;
+                                         $.modal.close();
+                                         $("#u_name").text(temp[i].fullName);
+                                         localStorage.setItem("logInUser", JSON.stringify(temp[i]));
+                                         changeButtonsAccLogStat();
+                                     } else {
+                                         flag = false;
+                                         $("#psw_error").text("Password is incorrect");
+                                     }
+                                 }
+                             }
+                             if (flag) {
+                                 $("#psw_error").text("Please signup, email does not exist");
+                             }
+                         }
+                     }
+                     
+         //            checking login status
+                     var checkLoginStatus = function() {
+                         if (JSON.parse(localStorage.getItem("logInUser"))) {
+                             return true;
+                         }
+                         return false;
+                     }
+                      
+         //            logout functionality
+                     $("#logout").click(function (){
+                         localStorage.removeItem("logInUser");
+                         changeButtonsAccLogStat();
+                     });
+         //            display welcome message and logout based on login status
+                     var changeButtonsAccLogStat = function() {
+                         var flag = checkLoginStatus();
+                         if (flag) {
+                             var temp = JSON.parse(localStorage.getItem("logInUser"));
+                             $("#u_name").text("Hola!!, welcome " + temp.fullName);
+                             $("#logout").css({"display": "block"});
+                             $("#login").css({"display": "none"});
+                             $("#signup").css({"display": "none"});
+                         } else {
+                             $("#u_name").text("");
+                             $("#logout").css({"display": "none"});
+                             $("#login").css({"display": "block"});
+                             $("#signup").css({"display": "block"});
+                         }
+                     }
+         //            signup user and store data in local storage
+                     var signUpUser=function(fullName, email, datepicker, signUpPsw) {
+                         if (JSON.parse(localStorage.getItem("userData")) && JSON.parse(localStorage.getItem("userData")).length > 0) {
+                             var flag = true;
+                             var temp = JSON.parse(localStorage.getItem("userData"));
+                             for (var i = 0; i < temp.length; i++) {
+                                 if (temp[i].email == document.getElementById("email").value) {
+                                     flag = false;
+                                     $("#signUpSuccess").text("");
+                                     $("#signUpPswConfirm_error").text("Email already exists");
+                                 }
+                             }
+         
+                             if (flag) {
+                                 if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                     temp.push({
+                                         fullName: fullName,
+                                         email: email,
+                                         dob: datepicker,
+                                         psw: signUpPsw
+                                     });
+                                     localStorage.setItem("userData", JSON.stringify(temp))
+                                     $("#signUpSuccess").text("Sign up successful");
+                                 } else {
+                     //				alert("Repeat password does not match");
+                                 }
+                             }
+                         } else {
+                             if (document.getElementById("signUpPsw").value == document.getElementById("signUpPswConfirm").value) {
+                                 localStorage.setItem("userData", JSON.stringify([]))
+                                 var temp = JSON.parse(localStorage.getItem("userData"));
+                                 temp.push({
+                                     fullName: fullName,
+                                     email: email,
+                                     dob: datepicker,
+                                     psw: signUpPsw
+                                 });
+                                 localStorage.setItem("userData", JSON.stringify(temp))
+                                 $("#signUpSuccess").text("Sign up successful");
+                                 changeButtonsAccLogStat();
+                             } else {
+                     //			alert("Repeat password does not match");
+                             }
+                         }
+                     }
+                     changeButtonsAccLogStat();
+                  });
+                    var emptyloginForm = function(){
+                        $("#uemail").val("");
+                         $("#psw").val("");
+                    }
+                    var emptySignUpForm = function(){
+                        $("#fullName").val("");
+                     $("#email").val("");
+                     $("#datepicker").val("");
+                     $("#signUpPsw").val("");
+                     $("#signUpPswConfirm").val("");
+                    }
+         		   
+         		   
+      </script>
+   </head>
+   <body>
+      <header class="hd01">
+         <div>
+            <div>
+               <h2 class="logo"><a href="index.html">Getfit</a></h2>
+            </div>
+            <div>
+               <div><a class = "login_signup" href="#id01" rel="modal:open" id="login" onclick="emptyloginForm()">Login/</a></div>
+               <div>
+                  <a class = "login_signup" href="#id02" rel="modal:open" id="signup" onclick="emptySignUpForm()">Sign Up</a>                        
+               </div>
+               <div><span class="common-color login-signup" id="u_name">,</span>&nbsp;&nbsp;
+                  <a class="common-color login-signup"  href="#" id="logout" style="width:auto;">(Logout)</a>
+               </div>
+            </div>
+         </div>
+         <div>
+            <a href="fooddiary.html">Food Log</a>
+            <a href="Consultation.html">Consultation</a>
+            <a href="Contact_us.html">Contact Us</a>
+            <a href="Services.html">Services</a>
+            <a href="testimonials.html">Testimonals</a>
+            <a href="TrainingList.html">Traning Exercises</a>
+            <a href="equipments.html">Equipments</a>
+         </div>
+      </header>
+      <!-- EQUIPMENTS SECTION STARTS HERE-->
+      <div style="background-color: white;">
+         <section class="equip_page_title equip_title">
+            <div class="equip_container">
+               <div class="text-center equip_text">
+                  <h2>EQUIPMENTS</h2>
+                  <p>Our selection of high-end, premium and professional equipments feature state-of-the-art technology, design and entertainment. Designed to give you the best user experience every time.</p>
+               </div>
+            </div>
+         </section>
+         <div class="equip_row_1">
+            <div class="equip_column">
+               <div class="equip_card">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/one.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>MYRUN</h4>
+                  <p>Minimal design and innovative tech treadmill which fits perfectly </p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+            <div class="equip_column">
+               <div class="equip_card">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/two.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>SKILLMILL CONNECT</h4>
+                  <p>Used in the best gyms to ensure an athlete's level workout
+                  <p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+            <div class="equip_column">
+               <div class="equip_card"> 
+                  <img class="equip_img_2" alt="picture" src="images/equipments/three.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>CROSS PERSONAL</h4>
+                  <p>Minimal design and innovative tech treadmill which fits perfectly 
+                  <p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+         </div>
+         <div class="equip_row_1">
+            <div class="equip_column">
+               <div class="equip_card">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/four.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>ARTIS CLUB</h4>
+                  <p>Stair climber easy for beginners, challenging for the fittest </p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+            <div class="equip_column">
+               <div class="equip_card">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/five.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>UNICA</h4>
+                  <p>A multifunctional bench is perfect solution to improve strength </p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+            <div class="equip_column">
+               <div class="equip_card"> 
+                  <img class="equip_img_2" alt="picture" src="images/equipments/six.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>KETTLEBELLS</h4>
+                  <p>Durable, heavy duty kettlebells are stylish and safe </p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+         </div>
+         <div class="equip_row_1">
+            <div class="equip_column">
+               <div class="equip_card">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/seven.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>KENNIS CORE STATION</h4>
+                  <p>With trunk rotation and bending movements, it works on central part of body </p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+            <div class="equip_column">
+               <div class="equip_card">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/eight.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>FLEXABILITY POSTERIOR</h4>
+                  <p>Ideal for the effective stretching and progressive lengthening of all posterior chain muscles</p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+            <div class="equip_column">
+               <div class="equip_card"> 
+                  <img class="equip_img_2" alt="picture" src="images/equipments/nine.jpg">
+               </div>
+               <div class ="equip_description">
+                  <h4>PURE-LEG EXTENSION</h4>
+                  <p>Recumbent bike that combines excellent biomechanics from professional gym equipment</p>
+                  <form action="equipments.html">
+                     <button type= "submit">DISCOVER MORE</button>
+                  </form>
+               </div>
+            </div>
+         </div>
+         <div class="equip_help">
+            <img class="equip_img_3" alt="picture" src="images/equipments/101.jpg">
+            <div class="help_text">
+               <p>Want some advice choosing your fitness equipment?
+                  <br>We are always happy to advise and support you. <a href="contactUs.html">Click here</a>
+               </p>
+            </div>
+         </div>
+         <div class="equip_about">
+            <h1>EQUIPMENTS WE OFFER</h1>
+            <div class="equip_about_row">
+               <div class= "equip_about_column">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/cardio.jpg">
+               </div>
+               <div class= "equip_about_column">
+                  <h2>CARDIO</h2>
+                  <p>Cardio equipments are proven to be a fun, effective way to get into and stay in shape. They are perfect, so they can be used effectively in a personal home gym and by businesses alike, allowing you to improve your workout technique.Our equipments offering a wide range of features; from heart rate monitoring to energy harvesting technology that actually generates power as you workout. Our range of equipments combines ease-of-use and comfort with some of the most innovative and user-friendly technology to create an experience that allows you to workout harder and for longer. Treadmills, exercise bikes, cross trainers, rowers are among the most popular pieces of cardio equipment.</p>
+               </div>
+            </div>
+            <div class="equip_about_row">
+               <div class= "equip_about_column">
+                  <h2>STRENGTH</h2>
+                  <p>The strength equipments Series experience begins with precise lines and a strikingly modern aesthetic. Visual appeal is topped only by the smooth motion and tactile connection felt by the user.Intelligent touches and subtle design elements result in a natural feel and a truly memorable experience. Hundreds of individual parts work together to create an elegant selectorized line that is enticing to exercisers of all fitness levels. Insignia Series. The optimal interaction between exerciser and machine.Selectorised, Plate Loaded, Multigyms, Cable stations, Benches & Racks, Free Weights & storage are few examples of strength equipments.</p>
+               </div>
+               <div class= "equip_about_column">
+                  <img class="equip_img_2" alt="picture" src="images/equipments/strength.jpg">
+               </div>
+            </div>
+            <div class="equip_about_row">
+               <div class= "equip_about_column">
+                  <img class="equip_img_2"  alt="picture" src="images/equipments/functional.jpg">
+               </div>
+               <div class= "equip_about_column">
+                  <h2>FUNCTIONAL</h2>
+                  <p>Our bodies are always moving. Walking, running, lifting things – the muscles in our bodies are constantly on the go, even when we’re just standing and sitting. Whilst most workouts will concentrate on particular movements that you don’t usually make in your everyday life, Functional Training takes those movements and makes them stronger. It also works on the whole body, rather than a specific area.For these reasons, Functional Training is ideal for those who want to improve their overall fitness, boost their metabolism and simply build up their strength throughout the body.Functional Training Equipment includes Stretching, Exercise tools</p>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="id01" class="modal">
+         <span class="modal-header">Login to proceed further</span>
+         <hr>
+         <label for="uemail"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="uemail">
+         <span class="validation-style" id="uemail_error"></span><br>
+         <label for="psw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="psw">  
+         <span class="validation-style" id="psw_error"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button class="cancelbtn">Cancel</button>  -->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="loginUserValidation">Login</button>    
+         </div>
+      </div>
+      <!--Signup form-->
+      <div id="id02" class="modal">
+         <span  class="modal-header">Sign up to create an account</span>
+         <hr>
+         <label for="fullName"><b>Name</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Name" id="fullName">
+         <span class="validation-style" id="fullName_error"></span><br>
+         <label for="email"><b>Email</b><span class="mandatory">*</span></label>
+         <input type="text" placeholder="Enter Email" id="email">
+         <span class="validation-style" id="email_error"></span><br>
+         <label for="datepicker"><b>Date Of Birth</b></label>
+         <input type="text" id="datepicker" placeholder="Enter Date Of Birth">
+         <label for="signUpPsw"><b>Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Enter Password" id="signUpPsw">
+         <span class="validation-style" id="signUpPsw_error"></span><br>
+         <label for="signUpPswConfirm"><b>Confirm Password</b><span class="mandatory">*</span></label>
+         <input type="password" placeholder="Confirm Password" id="signUpPswConfirm">
+         <span class="validation-style" id="signUpPswConfirm_error"></span><br>     
+         <span class="validation-success-style" id="signUpSuccess"></span><br>
+         <div style="background-color:#f1f1f1">
+            <!--               <button type="button" class="cancelbtn">Cancel</button>-->
+            <!--            <a href="#" rel="modal:close">Close</a>-->
+            <button class = "loginsignupbtn" type="button" id="signUpUserValidation">Sign up</button>
+         </div>
+      </div>
+      <!-- EQUIPMENTS SECTION ENDS HERE-->
+   </body>
+</html>
